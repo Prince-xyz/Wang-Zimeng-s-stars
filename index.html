@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>✨ 致王姿梦 ✨</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0f1e;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 40%, #1a1f2e, #03060b 80%);
+      z-index: 0;
+    }
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: block;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .message {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: rgba(255, 245, 220, 0.95);
+      text-shadow: 0 0 20px rgba(255, 220, 150, 0.5), 0 0 40px rgba(200, 180, 255, 0.3);
+      padding: 2rem 1.5rem;
+      max-width: 85vw;
+      background: rgba(10, 15, 30, 0.3);
+      backdrop-filter: blur(4px);
+      border-radius: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+      animation: breathe 6s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.02); }
+    }
+    .message h1 {
+      font-size: clamp(1.8rem, 8vw, 3.5rem);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.3rem;
+      color: #fff6e0;
+      font-family: 'Times New Roman', 'Songti SC', serif;
+    }
+    .message h1 .name {
+      display: block;
+      font-size: 0.9em;
+      color: #ffd9a3;
+      margin-top: 0.3rem;
+      letter-spacing: 0.2em;
+    }
+    .message .sub {
+      font-size: clamp(0.9rem, 4.5vw, 1.3rem);
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      margin-top: 0.8rem;
+      color: #d9d0ff;
+      opacity: 0.9;
+    }
+    .message .heart {
+      display: inline-block;
+      font-size: 1.4em;
+      color: #ffb7c5;
+      filter: drop-shadow(0 0 12px #ff8da1);
+      animation: heartBeat 1.8s ease-in-out infinite;
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      30% { transform: scale(1.2); }
+      60% { transform: scale(0.95); }
+    }
+    .footer-note {
+      position: fixed;
+      bottom: 20px;
+      left: 0; right: 0;
+      text-align: center;
+      z-index: 3;
+      color: rgba(200, 190, 230, 0.4);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      font-weight: 300;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+  <div class="message">
+    <h1>
+      致 王 姿 梦
+      <span class="name">你 是 我 的 星 星</span>
+    </h1>
+    <div class="sub">
+      <span class="heart">❤️</span> 夜 空 最 亮 的 那 颗 就 是 你 <span class="heart">❤️</span>
+    </div>
+  </div>
+  <div class="footer-note">✨ 每 一 颗 星 都 是 我 想 你 的 心 事 ✨</div>
+  <script>
+    (function() {
+      const canvas = document.getElementById('starCanvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let stars = [];
+      const STAR_COUNT = 280;
+      const MIN_RADIUS = 0.6;
+      const MAX_RADIUS = 2.2;
+      let time = 0;
+      function resizeCanvas() {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+        createStars();
+      }
+      function createStars() {
+        stars = [];
+        for (let i = 0; i < STAR_COUNT; i++) {
+          stars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            radius: Math.random() * (MAX_RADIUS - MIN_RADIUS) + MIN_RADIUS,
+            baseAlpha: Math.random() * 0.5 + 0.5,
+            speed: Math.random() * 1.5 + 0.5,
+            phase: Math.random() * Math.PI * 2
+          });
+        }
+      }
+      function drawStars(now) {
+        ctx.clearRect(0, 0, width, height);
+        time = now * 0.001;
+        stars.forEach(star => {
+          const twinkle = Math.sin(time * star.speed + star.phase) * 0.25;
+          let alpha = Math.min(1, Math.max(0.2, star.baseAlpha + twinkle));
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          let starColor;
+          if (star.radius > 1.5) {
+            starColor = `rgba(255, 245, 210, ${alpha})`;
+          } else if (star.radius < 1.0) {
+            starColor = `rgba(210, 230, 255, ${alpha})`;
+          } else {
+            starColor = `rgba(255, 255, 255, ${alpha})`;
+          }
+          ctx.fillStyle = starColor;
+          ctx.fill();
+          if (star.radius > 1.8) {
+            ctx.beginPath();
+            const glowRadius = star.radius * 4 + Math.sin(time * star.speed * 1.5 + star.phase) * 1.2;
+            const gradient = ctx.createRadialGradient(
+              star.x, star.y, star.radius * 0.5,
+              star.x, star.y, glowRadius
+            );
+            gradient.addColorStop(0, `rgba(255, 255, 230, ${alpha * 0.4})`);
+            gradient.addColorStop(0.6, `rgba(200, 220, 255, ${alpha * 0.15})`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+            ctx.fillStyle = gradient;
+            ctx.arc(star.x, star.y, glowRadius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+      }
+      function animate(now) {
+        drawStars(now);
+        requestAnimationFrame(animate);
+      }
+      window.addEventListener('resize', resizeCanvas);
+      window.addEventListener('load', () => {
+        resizeCanvas();
+        requestAnimationFrame(animate);
+      });
+      document.body.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
+      if (document.readyState === 'complete') {
+        resizeCanvas();
+        requestAnimationFrame(animate);
+      }
+    })();
+  </script>
+</body>
+</html>
